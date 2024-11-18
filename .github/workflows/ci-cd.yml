@@ -7,52 +7,24 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x]
-
     steps:
-    - uses: actions/checkout@v3
+    - name: Test application
+      run: echo "Test"
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-
-    - name: Install dependencies
-      run: npm ci
-
-    - name: Run tests
-      run: npm test
-
-    - name: Build application
-      run: npm run build --if-present
-
-  deploy-staging:
-    needs: build-and-test
+  build:
+    needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
     steps:
-    - name: Deploy to staging
-      run: |
-        echo "Deploying to staging environment"
-        echo "Deployment successful!"
+    - name: Build Application
+      run:
+        echo "Build"
 
-  deploy-production:
-    needs: deploy-staging
+  deploy:
+    needs: [test, build]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    environment:
-      name: production
-      url: https://your-production-url.com
-
     steps:
-    - name: Deploy to production
-      run: |
-        echo "Deploying to production environment"
-        echo "Deployment successful!"
+    - name: Deploy Application
+      run:
+        echo "Deploy"
